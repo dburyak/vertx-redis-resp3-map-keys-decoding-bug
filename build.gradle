@@ -1,0 +1,12 @@
+plugins {
+    id 'java'
+    id 'jvm-test-suite'
+}
+
+repositories {
+    mavenCentral()
+}
+
+wrapper {
+    gradleVersion = project.property('org.gradle.version')
+}
