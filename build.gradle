@@ -1,12 +1,53 @@
 plugins {
     id 'java'
     id 'jvm-test-suite'
+    id 'groovy'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
     mavenCentral()
 }
 
+dependencies {
+    def vertxVersion = '5.0.1'
+    implementation "io.vertx:vertx-core:$vertxVersion"
+    implementation "io.vertx:vertx-redis-client:$vertxVersion"
+
+    testImplementation platform("org.spockframework:spock-bom:$spockVersion")
+    testImplementation 'org.spockframework:spock-core'
+    testImplementation 'org.apache.groovy:groovy-all:4.0.28'
+    testRuntimeOnly 'net.bytebuddy:byte-buddy:1.17.6'
+    testRuntimeOnly 'cglib:cglib-nodep:3.3.0'
+    testRuntimeOnly 'org.objenesis:objenesis:3.4'
+    testImplementation platform('org.testcontainers:testcontainers-bom:1.21.3')
+    testImplementation 'org.testcontainers:spock'
+}
+
+testing {
+    suites {
+        test {
+            useSpock(spockVersion)
+        }
+    }
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
 wrapper {
     gradleVersion = project.property('org.gradle.version')
+}
+
+tasks.named('prepareKotlinBuildScriptModel') {
+    enabled = false
 }
